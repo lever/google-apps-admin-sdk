@@ -122,12 +122,11 @@ Client.prototype.request = function (method, resource, body, qs, cb) {
         }
 
         if (err) return cb(err);
-
+        self.canRefresh = false;
         var expireAt = +new Date + parseInt(json.expiresIn, 10)
         self.setAccessToken(accessToken)
         self.request(method, resource, opts.body, qs, function (err, res, body) {
           if (err) {
-            self.canRefresh = false;
             return cb(err);
           }
           cb(err, res, body, accessToken, expireAt);
