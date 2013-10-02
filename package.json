@@ -10,11 +10,15 @@
     "type": "git",
     "url": "https://github.com/ishbu/google-apps-admin-sdk"
   },
+  "dependencies": {
+    "request": "*",
+    "google-refresh-token": "*"
+  },
   "keywords": [
     "nodejs",
     "google"
   ],
-  "author": "Randal Truong",
+  "author": "Randal Truong <randal.truong@gmail.com>",
   "license": "MIT",
   "readmeFilename": "README.md",
   "gitHead": "14c6baf9742f12560809d6593ec9d81fc5df07d5",

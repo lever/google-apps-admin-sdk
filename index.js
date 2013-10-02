@@ -27,8 +27,14 @@ function Client(appDomain, accessToken, refreshToken, clientId, clientSecret) {
   };
 
   this.canRefresh = clientId && clientSecret && refreshToken
-
   this.calendarResource = new CalendarResource(this);
+}
+
+Client.prototype.setAccessToken = function (accessToken) {
+  this.accessToken = accessToken
+  this.headers = {
+    'Authorization': 'Bearer ' + this.accessToken 
+  };
 }
 
 function CalendarResource(client) {
@@ -73,6 +79,7 @@ Client.prototype.request = function (method, resource, body, qs, cb) {
     this.endpoint,
     resource);
 
+  qs.alt = 'json'
   var opts = {
     url: url,
     method: method,
@@ -86,11 +93,13 @@ Client.prototype.request = function (method, resource, body, qs, cb) {
 
   // Response cb handles json responses as well as refreshing token if possible
   var responseCb = function (error, response, body) {
+    console.log('responseCb', error, response.statusCode, response.headers, body)
+
+    // console.log('responseCb', error, response.headers, body)
     // Try to parse json responses, and creates an error if response code is not 200
     if (response && response.headers['content-type'] && (response.headers['content-type'].indexOf('application/json') !== -1)) {
       try {
-        console.log("body", body)
-        body = JSON.parse(body);
+        body = JSON.parse(body)
         if (!error && response.statusCode !== 200) {
           error = new Error(body.error.message);
         }
@@ -99,8 +108,10 @@ Client.prototype.request = function (method, resource, body, qs, cb) {
     }
 
     // Try to refresh token if we are capabable of doing so
-    if (error && self.canRefresh) {
+    if (self.canRefresh && (error || response.statusCode !== 200) ) {
+      console.log('refreshing', self);
       refreshGoogleToken(self.refreshToken, self.clientId, self.clientSecret, function (err, json, res) {
+        console.log('refresh cb', err, json, res.headers, res.statusCode)
         if (!err && json.error) {
           err = new Error(res.statusCode + ': ' + json.error);
         }
@@ -113,20 +124,24 @@ Client.prototype.request = function (method, resource, body, qs, cb) {
         if (err) return cb(err);
 
         var expireAt = +new Date + parseInt(json.expiresIn, 10)
-        self.accessToken = accessToken
+        self.setAccessToken(accessToken)
         self.request(method, resource, opts.body, qs, function (err, res, body) {
           if (err) {
             self.canRefresh = false;
             return cb(err);
           }
-          cb(null, res, body, accessToken, expireAt);
+          cb(err, res, body, accessToken, expireAt);
         });
+        return;
       });
     } else {
       return cb(error, response, body);
     }
   };
 
-  console.log('opts', opts)
+  console.log('making request with opts', opts)
   return request(opts, responseCb);
 };
+
+
+
