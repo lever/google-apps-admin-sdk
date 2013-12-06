@@ -93,7 +93,7 @@ Client.prototype.request = function (method, resource, body, qs, cb) {
 
   // Response cb handles json responses as well as refreshing token if possible
   var responseCb = function (error, response, body) {
-    console.log('responseCb', error, response.statusCode, response.headers, body)
+    console.log('responseCb', error, response && response.statusCode, response.headers, body)
 
     // console.log('responseCb', error, response.headers, body)
     // Try to parse json responses, and creates an error if response code is not 200
