@@ -45,7 +45,7 @@ function CalendarResource(client) {
 // API Methods matching https://developers.google.com/admin-sdk/calendar-resource/
 //https://apps-apis.google.com/a/feeds/calendar/resource/2.0/example.com/
 CalendarResource.prototype.list = function(qs, cb) {
-  return this.client.request('GET', this.apiPath + this.client.appDomain + '/', cb);
+  return this.client.request('GET', this.apiPath + this.client.appDomain + '/', null, qs, cb);
 };
 
 /**
