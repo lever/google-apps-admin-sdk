@@ -68,7 +68,7 @@ Client.prototype.request = function (method, resource, body, qs, cb) {
   if (typeof body === 'function' && !cb) {
     cb = body;
     body = null;
-  } else if (typeof body === 'object') {
+  } else if (body !== null && body.constructor == Object) {
     body = JSON.stringify(body);
   }
 
