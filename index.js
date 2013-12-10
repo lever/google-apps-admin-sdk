@@ -111,7 +111,7 @@ Client.prototype.request = function (method, resource, body, qs, cb) {
     if (self.canRefresh && (error || response.statusCode !== 200) ) {
       console.log('refreshing', self);
       refreshGoogleToken(self.refreshToken, self.clientId, self.clientSecret, function (err, json, res) {
-        console.log('refresh cb', err, json, res.headers, res.statusCode)
+        console.log('refresh cb', err, json, res && res.headers, res && res.statusCode)
         if (!err && json.error) {
           err = new Error(res.statusCode + ': ' + json.error);
         }
