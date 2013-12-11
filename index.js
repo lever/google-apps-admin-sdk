@@ -68,7 +68,7 @@ Client.prototype.request = function (method, resource, body, qs, cb) {
   if (typeof body === 'function' && !cb) {
     cb = body;
     body = null;
-  } else if (body !== null && body.constructor == Object) {
+  } else if (body !== null && typeof body === 'object') {
     body = JSON.stringify(body);
   }
 
@@ -116,7 +116,7 @@ Client.prototype.request = function (method, resource, body, qs, cb) {
           err = new Error(res.statusCode + ': ' + json.error);
         }
 
-        var accessToken = json.accessToken;
+        var accessToken = json ? json.accessToken : null;
         if (!err && !accessToken) {
           err = new Error(res.statusCode + ': refreshToken error');
         }
