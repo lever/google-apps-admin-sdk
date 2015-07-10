@@ -1,11 +1,10 @@
 /*!
- * gcal
+ * google-apps-admin-sdk
  * Copyright(c) 2012 Randal Truong <randal@lever.co>
  * MIT Licensed
  */
 
 var request = require('request');
-var refreshGoogleToken = require('google-refresh-token');
 
 module.exports = {
   Client: Client
@@ -23,17 +22,16 @@ function Client(appDomain, accessToken, refreshToken, clientId, clientSecret) {
   this.host = 'apps-apis.google.com';
   this.endpoint = '/a/feeds/';
   this.headers = {
-    'Authorization': 'Bearer ' + this.accessToken 
+    'Authorization': 'Bearer ' + this.accessToken
   };
 
-  this.canRefresh = clientId && clientSecret && refreshToken
   this.calendarResource = new CalendarResource(this);
 }
 
 Client.prototype.setAccessToken = function (accessToken) {
   this.accessToken = accessToken
   this.headers = {
-    'Authorization': 'Bearer ' + this.accessToken 
+    'Authorization': 'Bearer ' + this.accessToken
   };
 }
 
@@ -107,35 +105,7 @@ Client.prototype.request = function (method, resource, body, qs, cb) {
       }
     }
 
-    // Try to refresh token if we are capabable of doing so
-    if (self.canRefresh && (error || response.statusCode !== 200) ) {
-      console.log('refreshing', self);
-      refreshGoogleToken(self.refreshToken, self.clientId, self.clientSecret, function (err, json, res) {
-        console.log('refresh cb', err, json, res && res.headers, res && res.statusCode)
-        if (!err && json.error) {
-          err = new Error(res.statusCode + ': ' + json.error);
-        }
-
-        var accessToken = json ? json.accessToken : null;
-        if (!err && !accessToken) {
-          err = new Error(res.statusCode + ': refreshToken error');
-        }
-
-        if (err) return cb(err);
-        self.canRefresh = false;
-        var expireAt = +new Date + parseInt(json.expiresIn, 10)
-        self.setAccessToken(accessToken)
-        self.request(method, resource, opts.body, qs, function (err, res, body) {
-          if (err) {
-            return cb(err);
-          }
-          cb(err, res, body, accessToken, expireAt);
-        });
-        return;
-      });
-    } else {
-      return cb(error, response, body);
-    }
+    return cb(error, response, body);
   };
 
   console.log('making request with opts', opts)

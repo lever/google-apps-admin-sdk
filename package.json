@@ -11,8 +11,7 @@
     "url": "https://github.com/ishbu/google-apps-admin-sdk"
   },
   "dependencies": {
-    "request": "~2.27.0",
-    "google-refresh-token": "*"
+    "request": "~2.27.0"
   },
   "keywords": [
     "nodejs",
