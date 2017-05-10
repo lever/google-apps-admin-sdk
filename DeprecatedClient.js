@@ -5,10 +5,7 @@
 
 var request = require('request');
 
-module.exports = {
-  Client: Client
-, CalendarResource: CalendarResource
-}
+module.exports = Client
 
 function Client(appDomain, accessToken, refreshToken, clientId, clientSecret) {
   this.appDomain = appDomain
