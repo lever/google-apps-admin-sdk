@@ -1,6 +1,6 @@
 {
   "name": "google-apps-admin-sdk",
-  "version": "2.0.0",
+  "version": "2.1.0",
   "description": "Client for the Google Apps Admin SDK",
   "main": "index.js",
   "scripts": {
