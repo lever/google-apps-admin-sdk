@@ -33,9 +33,6 @@ function list(qs, cb) {
 };
 
 function get(resourceId, qs, cb) {
-  if (!resourceId) {
-    throw new Error('[google-apps-admin-sdk] resourceId must be provided when trying to GET a single resource')
-  }
   if (typeof qs === 'function') {
     cb = qs
     qs = {}
