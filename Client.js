@@ -1,21 +1,22 @@
-var request = require('request');
+var request = require('request')
+var urlUtil = require('url')
 
 function Client(accessToken) {
-  this.accessToken = accessToken;
+  this.accessToken = accessToken
   this.request = request.defaults({
     baseUrl: 'https://www.googleapis.com/admin',
     auth: {
       bearer: this.accessToken
     },
     json: true
-  });
+  })
 
-  this.calendarResource = new CalendarResource(this);
-  this.buildingResource = new BuildingResource(this);
+  this.calendarResource = new CalendarResource(this)
+  this.buildingResource = new BuildingResource(this)
 }
 
 function CalendarResource(client) {
-  this.client = client;
+  this.client = client
   this.resourcePath = '/directory/v1/customer/my_customer/resources/calendars'
 }
 
@@ -30,7 +31,7 @@ function list(qs, cb) {
     qs = {}
   }
   return this.client.request({method: 'GET', uri: this.resourcePath, qs: qs}, cb)
-};
+}
 
 function get(resourceId, qs, cb) {
   if (typeof qs === 'function') {
@@ -40,7 +41,22 @@ function get(resourceId, qs, cb) {
   // We do not use url.resolve becuase if the resourceId contains a leading slash,
   // we would end up with an incorrect url.
   var requestUrl = this.resourcePath + '/' + resourceId
-  return this.client.request({method: 'GET', uri: requestUrl, qs: qs}, cb)
+  return this.client.request({method: 'GET', uri: encodeUri(requestUrl), qs: qs}, cb)
+}
+
+// The request library does not correctly encode non-ascii characters when provided
+// in the uri. See: https://github.com/request/request/pull/2210 for more info.
+function encodeUri(uri) {
+  // Only encode string uris, if the uri is a parsed uri object, we do nothing.
+  if (typeof uri === 'string') {
+    var parts = urlUtil.parse(uri)
+    if (parts.pathname) {
+      // Prevent double encoding by calling decodeURI first
+      parts.pathname = encodeURI(decodeURI(parts.pathname))
+      uri = urlUtil.format(parts)
+    }
+  }
+  return uri
 }
 
 /*
