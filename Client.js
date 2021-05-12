@@ -38,30 +38,17 @@ function get(resourceId, qs, cb) {
     cb = qs
     qs = {}
   }
-  // We do not use url.resolve becuase if the resourceId contains a leading slash,
-  // we would end up with an incorrect url.
-  var requestUrl = this.resourcePath + '/' + encodeURIComponent(resourceId)
-  console.log('====================== ', requestUrl)
-  console.log('==========uri', encodeUri(requestUrl))
-  return this.client.request({method: 'GET', uri: encodeUri(requestUrl), qs: qs}, cb)
+  
+  return this.client.request({method: 'GET', uri: encodeUri(this.resourcePath, resourceId), qs: qs}, cb)
 }
 
 // The request library does not correctly encode non-ascii characters when provided
 // in the uri. See: https://github.com/request/request/pull/2210 for more info.
-function encodeUri(uri) {
-  // Only encode string uris, if the uri is a parsed uri object, we do nothing.
-  if (typeof uri === 'string') {
-    var parts = urlUtil.parse(uri)
-    console.log('=============parts', parts)
-    if (parts.pathname) {
-      // Prevent double encoding by calling decodeURI first
-      parts.pathname = encodeURI(decodeURI(parts.pathname))
-      console.log('================parts.pathname', parts.pathname)
-      console.log('=============parts', parts)
-      uri = urlUtil.format(parts)
-    }
-  }
-  return uri
+function encodeUri(path, id) {
+  // Prevent double encoding by calling decodeURI first
+  resourceId = encodeURIComponent(decodeURIComponent(id));
+  
+  return path + '/' + resourceId;
 }
 
 /*
