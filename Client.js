@@ -40,7 +40,7 @@ function get(resourceId, qs, cb) {
   }
   // We do not use url.resolve becuase if the resourceId contains a leading slash,
   // we would end up with an incorrect url.
-  var requestUrl = this.resourcePath + '/' + encodeUriComponent(resourceId)
+  var requestUrl = this.resourcePath + '/' + encodeURIComponent(resourceId)
   return this.client.request({method: 'GET', uri: encodeUri(requestUrl), qs: qs}, cb)
 }
 
