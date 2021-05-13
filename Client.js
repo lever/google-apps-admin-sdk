@@ -1,5 +1,4 @@
 var request = require('request')
-var urlUtil = require('url')
 
 function Client(accessToken) {
   this.accessToken = accessToken
@@ -39,12 +38,12 @@ function get(resourceId, qs, cb) {
     qs = {}
   }
   
-  return this.client.request({method: 'GET', uri: encodeUri(this.resourcePath, resourceId), qs: qs}, cb)
+  return this.client.request({method: 'GET', uri: getUrlForResource(this.resourcePath, resourceId), qs: qs}, cb)
 }
 
 // The request library does not correctly encode non-ascii characters when provided
 // in the uri. See: https://github.com/request/request/pull/2210 for more info.
-function encodeUri(path, id) {
+function getUrlForResource(path, id) {
   // Prevent double encoding by calling decodeURI first
   resourceId = encodeURIComponent(decodeURIComponent(id));
   
